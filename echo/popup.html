@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <style>
+        body {
+            width: 320px;
+            padding: 20px;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 8px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .header h2 {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 600;
+        }
+        .status {
+            margin: 15px 0;
+            padding: 12px;
+            border-radius: 6px;
+            text-align: center;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        .status.idle {
+            background-color: rgba(76, 175, 80, 0.2);
+            border: 1px solid rgba(76, 175, 80, 0.5);
+        }
+        .status.recording {
+            background-color: rgba(244, 67, 54, 0.2);
+            border: 1px solid rgba(244, 67, 54, 0.5);
+            animation: pulse 2s infinite;
+        }
+        .status.processing {
+            background-color: rgba(255, 152, 0, 0.2);
+            border: 1px solid rgba(255, 152, 0, 0.5);
+        }
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.7; }
+            100% { opacity: 1; }
+        }
+        .controls {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin: 15px 0;
+        }
+        button {
+            padding: 12px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .record-btn {
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            color: white;
+        }
+        .record-btn:hover:not(:disabled) {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(76, 175, 80, 0.4);
+        }
+        .stop-btn {
+            background: linear-gradient(45deg, #f44336, #da190b);
+            color: white;
+        }
+        .stop-btn:hover:not(:disabled) {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(244, 67, 54, 0.4);
+        }
+        .secondary-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        .secondary-btn:hover:not(:disabled) {
+            background: rgba(255, 255, 255, 0.3);
+        }
+        .disabled {
+            background: rgba(128, 128, 128, 0.3) !important;
+            cursor: not-allowed !important;
+            transform: none !important;
+            box-shadow: none !important;
+        }
+        .options {
+            margin: 15px 0;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+        }
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            margin: 8px 0;
+            font-size: 14px;
+        }
+        .checkbox-group input[type="checkbox"] {
+            margin-right: 8px;
+            transform: scale(1.2);
+        }
+        .notification-section {
+            background: rgba(255, 193, 7, 0.2);
+            border: 1px solid rgba(255, 193, 7, 0.5);
+            padding: 12px;
+            border-radius: 6px;
+            margin: 15px 0;
+            font-size: 13px;
+        }
+        .notification-section .warning-icon {
+            color: #FFC107;
+            font-weight: bold;
+            margin-right: 8px;
+        }
+        .recordings-section {
+            max-height: 200px;
+            overflow-y: auto;
+            margin-top: 20px;
+        }
+        .recording-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px;
+            margin: 8px 0;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+        .recording-item .filename {
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+        .recording-item .details {
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 8px;
+        }
+        .recording-actions {
+            display: flex;
+            gap: 4px;
+            flex-wrap: wrap;
+        }
+        .mini-btn {
+            padding: 4px 8px;
+            font-size: 10px;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+        .download-btn {
+            background: #2196F3;
+            color: white;
+        }
+        .transcribe-btn {
+            background: #9C27B0;
+            color: white;
+        }
+        .delete-btn {
+            background: #f44336;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h2>Meet Audio Recorder Pro</h2>
+    </div>
+    
+    <div class="notification-section">
+        <span class="warning-icon">⚠️</span>
+        <strong>Important:</strong> This extension will notify all meeting participants when recording starts. Ensure you have consent before proceeding.
+    </div>
+    
+    <div id="status" class="status idle">
+        Ready to record meeting audio
+    </div>
+    
+    <div class="options">
+        <div class="checkbox-group">
+            <input id="mixMicrophone" type="checkbox" checked>
+            <label for="mixMicrophone">Include my microphone</label>
+        </div>
+        <div class="checkbox-group">
+            <input id="notifyParticipants" type="checkbox" checked>
+            <label for="notifyParticipants">Notify all participants</label>
+        </div>
+        <div class="checkbox-group">
+            <input id="autoTranscribe" type="checkbox" checked>
+            <label for="autoTranscribe">Auto-transcribe after recording</label>
+        </div>
+    </div>
+    
+    <div class="controls">
+        <button id="recordBtn" class="record-btn">
+            🎤 Start Recording
+        </button>
+        
+        <button id="stopBtn" class="stop-btn disabled" disabled>
+            ⏹️ Stop & Save Recording
+        </button>
+        
+        <button id="testConnectionBtn" class="secondary-btn">
+            🔧 Test Backend Connection
+        </button>
+    </div>
+    
+    <div id="recordings" class="recordings-section">
+        <h3 style="margin: 15px 0 10px 0; font-size: 16px;">Recent Recordings</h3>
+        <div id="recordingsList">
+            Loading recordings...
+        </div>
+    </div>
+
+    <script src="popup-enhanced.js"></script>
+</body>
+</html>
