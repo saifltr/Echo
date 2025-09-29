@@ -1,0 +1,47 @@
+{
+  "manifest_version": 3,
+  "name": "Meet Audio Recorder Pro",
+  "version": "2.0.1",
+  "description": "Professional audio recording for Google Meet with participant notifications and transcription",
+  
+  "permissions": [
+    "tabCapture",
+    "activeTab",
+    "tabs", 
+    "storage",
+    "downloads",
+    "scripting"
+  ],
+  
+  "host_permissions": [
+    "https://meet.google.com/*"
+  ],
+  
+  "background": {
+    "service_worker": "background.js"
+  },
+  
+  "content_scripts": [
+    {
+      "matches": ["https://meet.google.com/*"],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Meet Recorder Pro"
+  },
+  
+  "web_accessible_resources": [
+    {
+      "resources": ["*.js", "*.html"],
+      "matches": ["https://meet.google.com/*"]
+    }
+  ],
+  
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'"
+  }
+}
