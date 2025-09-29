@@ -15,7 +15,7 @@ app = FastAPI(title="Meet Audio Transcriber", version="1.0.0")
 # Add CORS middleware to allow extension requests
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # In production, restrict this to your extension's origin
+    allow_origins=["*"], 
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -206,4 +206,5 @@ if __name__ == "__main__":
     import uvicorn
     print("Starting Meet Audio Transcriber backend...")
     print("Make sure you have the Whisper model in models/whisper-base/")
+
     uvicorn.run(app, host="0.0.0.0", port=8000)
